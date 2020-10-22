@@ -66,6 +66,22 @@ def temperatures():
     temp = list(np.ravel(results))
     return jsonify(temp)
 
+@app.route("/api/v1.0/temp/start/end")
+def trip():
+    session = Session(engine)
+    
+    start_date = dt.datetime(2012, 2, 28) - dt.timedelta(days=365)
+    end_date = dt.datetime(2012, 3, 5) - dt.timedelta(days=365)
+
+    results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start_date).\
+        filter(Measurement.date <= end_date).all()
+
+    session.close()
+
+    trip_temps = list(np.ravel(results))
+    return jsonify(trip_temps)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
